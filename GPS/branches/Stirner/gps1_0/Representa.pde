@@ -37,6 +37,7 @@ void representa(char **GGAPrint,int sentencias, char *trama){
      Serial.print("| Seraching GPS satellites-->");
      Serial.print(GGAPrint[6]);
      Serial.println(" |");
+   Serial.println("|----Waiting for 5 satellites---|");
    Serial.println("---------------------------------");  
   }
   

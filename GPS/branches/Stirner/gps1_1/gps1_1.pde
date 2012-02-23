@@ -7,7 +7,16 @@
   // Constants
   #define rxPin 9      //rx pin in gps connection
   #define txPin 8      //tx pin in gps connection
-  
+  byte signal[8] = {
+  0b11111,
+  0b11111,
+  0b01110,
+  0b01110,
+  0b00100,
+  0b00100,
+  0b00000,
+  0b11111
+};
   // set up the serial port
   
   SoftwareSerial gps = SoftwareSerial(rxPin, txPin);
@@ -19,6 +28,7 @@
   int i = 0;
   int varGPG = 0;
   int Estado = 0;
+  int menu = 1;
   
   
   // Buffers for data input
@@ -29,31 +39,25 @@
   
   
   void setup() {
-  
+  //lcd.createChar(1, signal);
   Serial.begin(9600);   // Arduino serial port configuration
   lcd.init();                      // initialize the lcd 
   lcd.backlight();
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);   // apagamos el led hasta tener señal satelite
   
-  lcd.setCursor(0, 0);
-  lcd.autoscroll();
-  lcd.print("----------------");
-  lcd.print("Cargando");
-  lcd.print("Configuracion");
-  lcd.print("Inicial");
-  lcd.noAutoscroll();
-  lcd.clear();
+  inicio();
+  
+  Serial.println("--------------------------------------");
   Serial.println("|-------Stirner GPS Loader 1.0-------|");
   Serial.println("|-Tiempo Aproximado para la conexion-|");
   Serial.println("|-------------10 minutos-------------|");
   Serial.println("--------------------------------------");
-  delay(5000);
   Serial.flush();                                                            // Clear serial buffer
   pinMode(rxPin, INPUT);
   pinMode(txPin, OUTPUT);
   gps.begin(4800);
-  
+  gps.println("$PSTMINITGPS,4138.39329,N,00053.28085,W,272,23,02,2012,17,23,00");
   }
   void loop() {
   //memset(inBuffer,0,sizeof(inBuffer));//inicializa a cero la cadena para eliminar restos no deseados de lecturas anteriores

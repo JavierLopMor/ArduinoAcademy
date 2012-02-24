@@ -3,20 +3,11 @@
   #include <Wire.h>
   #include <string.h>
   #include <stdio.h>
+  #include <stdlib.h>
   
   // Constants
   #define rxPin 9      //rx pin in gps connection
   #define txPin 8      //tx pin in gps connection
-  byte signal[8] = {
-  0b11111,
-  0b11111,
-  0b01110,
-  0b01110,
-  0b00100,
-  0b00100,
-  0b00000,
-  0b11111
-};
   // set up the serial port
   
   SoftwareSerial gps = SoftwareSerial(rxPin, txPin);
@@ -29,22 +20,20 @@
   int varGPG = 0;
   int Estado = 0;
   int menu = 1;
-  
+  int inPin = 7;                 // PIN del pulsador
+  int value = 0;                 // estado del pulsador de menu
   
   // Buffers for data input
   //char inBuffer[300] = "";
   char TramaGPG[100];
-
- 
-  
   
   void setup() {
-  //lcd.createChar(1, signal);
   Serial.begin(9600);   // Arduino serial port configuration
   lcd.init();                      // initialize the lcd 
   lcd.backlight();
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);   // apagamos el led hasta tener señal satelite
+  pinMode(inPin, INPUT);    // Inicializa el pin 10 como entrada digital
   
   inicio();
   
@@ -60,6 +49,14 @@
   gps.println("$PSTMINITGPS,4138.39329,N,00053.28085,W,272,23,02,2012,17,23,00");
   }
   void loop() {
+  value = digitalRead(inPin);
+  if(value==1){ //controlamos la pantalla de menu
+    menu++;
+    lcd.clear();
+    if (menu==3){
+      menu=1;
+    }
+  }
   //memset(inBuffer,0,sizeof(inBuffer));//inicializa a cero la cadena para eliminar restos no deseados de lecturas anteriores
   memset(TramaGPG, 0, sizeof(TramaGPG));         //inicializa a cero la cadena para eliminar restos no deseados de lecturas anteriores
   byteGPS = 0;

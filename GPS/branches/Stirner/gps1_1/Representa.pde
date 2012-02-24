@@ -3,9 +3,14 @@ void representa(char **GGAPrint,int sentencias, char *trama){
   int n=1;
   Estado=atoi(GGAPrint[5]);
 
-  if(trama=="$GPGGA" && Estado==1){
-    if(menu==1){
-      LongLat(GGAPrint[3],GGAPrint[4],GGAPrint[1],GGAPrint[2]);
+  if(trama=="$GPGGA" && Estado==0){
+      if(menu==1){
+        LongLat(GGAPrint[3],GGAPrint[4],GGAPrint[1],GGAPrint[2]);
+      }
+      if(menu==2){   
+        altitud(GGAPrint[8],GGAPrint[9]);     
+        reloj(GGAPrint[0]);
+      }
       digitalWrite(13, HIGH);// indicamos que hay conexion satelite
       Serial.println("");
       Serial.println("----------------------------------------------");
@@ -34,7 +39,7 @@ void representa(char **GGAPrint,int sentencias, char *trama){
       /*for(n=0;n<sentencias;n++){
          Serial.println(GGAPrint[n]); 
         }*/
-    }
+   
   }else{
     //lcd.clear();
     esperaGPS(GGAPrint[6]);

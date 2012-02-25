@@ -6,10 +6,12 @@
     memset(GGA, 0, sizeof(GGA));
     
      pch = strtok (TramaGPG,",");
+     
+     //Trocea la cadena que devuelve
     if (strcmp(pch,"$GPGGA")==0){
-      while (pch != NULL)
+      while (pch != NULL) //cuando el dato sea diferente de ,, (valido, no null)
         {
-          pch = strtok (NULL, ",");
+          pch = strtok (NULL, ",");  //donde estabamos sigue cortando en comas
           GGA[i]=pch;
           if(pch!=NULL){
             i++;

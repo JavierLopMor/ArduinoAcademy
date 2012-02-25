@@ -5,7 +5,7 @@ void representa(char **GGAPrint,int sentencias, char *trama){
 
   if(trama=="$GPGGA" && Estado==1){
       if(menu==1){
-        LongLat(GGAPrint[3],GGAPrint[4],GGAPrint[1],GGAPrint[2]);
+        LongLat(GGAPrint[3],GGAPrint[4],GGAPrint[1],GGAPrint[2]);  //impmrime latitud y longitud en display
       }
       if(menu==2){   
         altitud(GGAPrint[8],GGAPrint[9]);     
@@ -43,7 +43,7 @@ void representa(char **GGAPrint,int sentencias, char *trama){
   }else{
     
     digitalWrite(13, LOW);
-    esperaGPS(GGAPrint[6]);
+    esperaGPS(GGAPrint[6]); //numero de satelites conectados
     
    Serial.println("---------------------------------");
      Serial.print("| Seraching GPS satellites-->");

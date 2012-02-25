@@ -35,9 +35,9 @@
   lcd.backlight();
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);   // apagamos el led hasta tener señal satelite
-  pinMode(inPin, INPUT);    // Inicializa el pin 10 como entrada digital
+  pinMode(inPin, INPUT);    // Inicializa el pin 5 como entrada digital
   
-  inicio();
+  inicio();    //Llama a intro de LCD
   
   Serial.println("--------------------------------------");
   Serial.println("|-------Stirner GPS Loader 1.0-------|");
@@ -50,6 +50,8 @@
   gps.begin(4800);
   gps.println("$PSTMINITGPS,4138.39329,N,00053.28085,W,272,23,02,2012,17,23,00");
   }
+  
+  
   void loop() {
   value = digitalRead(inPin);
   if(value==1){ //controlamos la pantalla de menu

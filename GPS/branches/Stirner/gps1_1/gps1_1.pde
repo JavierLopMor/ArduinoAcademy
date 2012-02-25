@@ -6,8 +6,8 @@
   #include <stdlib.h>
   
   // Constants
-  #define rxPin 9      //rx pin in gps connection
-  #define txPin 8      //tx pin in gps connection
+  #define rxPin 7      //rx pin in gps connection
+  #define txPin 6      //tx pin in gps connection
   // set up the serial port
   
   SoftwareSerial gps = SoftwareSerial(rxPin, txPin);
@@ -20,8 +20,10 @@
   int varGPG = 0;
   int Estado = 0;
   int menu = 1;
-  int inPin = 7;                 // PIN del pulsador
+  int inPin = 5;                 // PIN del pulsador
   int value = 0;                 // estado del pulsador de menu
+  int pinCheck = 4;
+  int valueCheck = 0;
   
   // Buffers for data input
   //char inBuffer[300] = "";

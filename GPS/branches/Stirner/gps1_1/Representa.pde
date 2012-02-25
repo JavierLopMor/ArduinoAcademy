@@ -3,7 +3,7 @@ void representa(char **GGAPrint,int sentencias, char *trama){
   int n=1;
   Estado=atoi(GGAPrint[5]);
 
-  if(trama=="$GPGGA" && Estado==0){
+  if(trama=="$GPGGA" && Estado==1){
       if(menu==1){
         LongLat(GGAPrint[3],GGAPrint[4],GGAPrint[1],GGAPrint[2]);
       }
@@ -41,7 +41,8 @@ void representa(char **GGAPrint,int sentencias, char *trama){
         }*/
    
   }else{
-    //lcd.clear();
+    
+    digitalWrite(13, LOW);
     esperaGPS(GGAPrint[6]);
     
    Serial.println("---------------------------------");

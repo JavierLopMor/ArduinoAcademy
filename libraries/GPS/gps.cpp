@@ -1,0 +1,446 @@
+#include "gps.h"
+//#define DEBUG
+
+GPS::GPS(uint r, uint t):SoftwareSerial(r,t)
+{
+  pinMode(r,INPUT);
+  pinMode(t,OUTPUT);
+}
+
+void GPS::print()
+{
+	Serial.print("\t\t\tDatos recibidos del GPS:\r\n");
+	Serial.print("----------------------------------------------------------------------------------");
+	Serial.print("\r\nhora UTC: ");Serial.print(dat.UTCtime);Serial.print("\tHora FIX: ");Serial.print(dat.FIXtime);
+	Serial.print("\tFecha: ");Serial.print(dat.date);
+	Serial.print("\r\nLatitud: ");Serial.print(dat.latitude,2);Serial.print(dat.ns);
+	Serial.print("\tLongitud: ");Serial.print(dat.longitud,2);Serial.print(dat.eo);
+	Serial.print("\r\nCalidad GPS: ");
+	switch (dat.quality)
+	{
+		case 0:
+			Serial.print("Sin posicion.");
+			break;
+		case 1:
+			Serial.print("Fijado con GPS.");
+			break;
+		case 2:
+			Serial.print("Fijado con DGPS.");
+	}
+	Serial.print("\t Satelites: ");Serial.print(dat.satelites,DEC);
+	Serial.print("\r\nResolucion: ");Serial.print(dat.dop,2);Serial.print("\tAltura: ");Serial.print(dat.altitude,2);
+	Serial.print("\r\nModo Configurado: ");
+	switch(dat.conf_mode)
+	{
+		case 'M':
+			Serial.print("'M' Manual.");
+			break;
+		case 'A':
+			Serial.print("'A' Automatico.");
+			break;
+	}
+	Serial.print("\tModo actual: ");
+	switch(dat.actual_mode)
+	{
+		case 1:
+			Serial.print("Sin datos.");
+			break;
+		case 2:
+			Serial.print("Modo 2D.");
+			break;
+		case 3:
+			Serial.print("Modo 3D.");
+			break;
+	}
+	Serial.print("\r\nVelocidad en knots: ");Serial.print(dat.speed);Serial.print("\tCurso: ");Serial.print(dat.course);
+	Serial.print("\r\nDesviacion Magnetica con el norte: ");Serial.print(dat.magnetic);
+	Serial.print("\t\tTiempo de ejeccucion: ");Serial.print(dat.exec,DEC);
+	Serial.print("\r\n			Datos recibidos del GPS:\r\n");
+	Serial.print("----------------------------------------------------------------------------------\r\n");
+}
+
+int GPS::kmh()
+{
+	return(dat.speed*1.852);
+}
+
+char GPS::read()
+{
+  return(SoftwareSerial::read());
+}
+
+void GPS::begin(long x)
+{
+  SoftwareSerial::begin(x);
+}
+
+void GPS::parse(char *s)
+{
+	if(strncmp(s,"$GPGGA",6)==0)
+	{
+		GPS::_gpgga(s);
+	}
+	else if(strncmp(s,"$GPGSA",6)==0)
+	{
+		GPS::_gpgsa(s);
+	}
+	else if(strncmp(s,"$GPRMC",6)==0)
+	{
+		GPS::_gprmc(s);
+	}
+}
+
+void GPS::_gpgsa(char *s)
+{
+	uint termino = 0;
+	uint i_st = 0;
+	uint i_et = 0;
+	bool st = false;
+	bool et = false;
+	for(uint indice=0;indice<80;indice++)
+	{
+		if(s[indice] == ',')
+		{
+			if(st == false)
+			{
+				i_st = indice + 1 ;
+				st = true;
+				#ifdef DEBUG
+					Serial.print("\r\nGPS::Debug -> Comienzo de termino, i_st= ");
+					Serial.print(i_st,DEC);
+				#endif
+			}
+			else if(st==true && et==false)
+			{
+				i_et = indice - 1;
+				et = true;
+				#ifdef DEBUG
+					Serial.print("\r\nGPS::Debug -> Fin de termino, i_et= ");
+					Serial.print(i_et,DEC);
+				#endif
+			}
+			if(st&&et)
+			{
+				termino += 1;
+				if(termino>2)
+					break;
+				int longitud = i_et-i_st + 1 ;
+				#ifdef DEBUG
+					Serial.print("\r\nGPS::Debug -> Caracteres del termino, longitud= ");
+					Serial.print(longitud,DEC);
+				#endif
+				if(longitud == 1)
+				{
+					#ifdef DEBUG
+						Serial.print("\r\nGPS::Debug -> Valor del termino: ");
+						Serial.print(s[i_st]);
+					#endif
+					switch (termino)
+					{
+						case 1:
+							dat.conf_mode = s[i_st];
+							break;
+						case 2:
+							dat.actual_mode = (uint)atoi(&s[i_st]);
+							break;
+					}
+				}
+				i_st = i_et + 2;
+				et = false;
+			}
+		}
+	}
+}
+
+void GPS::_gpgga(char *s)
+{
+	uint termino = 0;
+	uint i_st = 0;
+	uint i_et = 0;
+	bool st = false;
+	bool et = false;
+	for(uint indice=0;indice<80;indice++)
+	{
+		if(s[indice] == ',')
+		{
+			if(st == false)
+			{
+				i_st = indice + 1 ;
+				st = true;
+				#ifdef DEBUG
+					Serial.print("\r\nGPS::Debug -> Comienzo de termino, i_st= ");
+					Serial.print(i_st,DEC);
+				#endif
+			}
+			else if(st==true && et==false)
+			{
+				i_et = indice - 1;
+				et = true;
+				#ifdef DEBUG
+					Serial.print("\r\nGPS::Debug -> Fin de termino, i_et= ");
+					Serial.print(i_et,DEC);
+				#endif
+			}
+			if(st&&et)
+			{
+				termino += 1;
+				if(termino>9)
+					break;
+				int longitud = i_et-i_st + 1 ;
+				#ifdef DEBUG
+					Serial.print("\r\nGPS::Debug -> Caracteres del termino, longitud= ");
+					Serial.print(longitud,DEC);
+				#endif
+				if(longitud == 1)
+				{
+					switch (termino)
+					{
+						case 3:
+							dat.ns = s[i_st];
+							break;
+						case 5:
+							dat.eo = s[i_st];
+							break;
+						case 6:
+							dat.quality = (uint)atoi(&s[i_st]);
+							break;
+					}
+				}
+				else if(longitud>1)
+				{
+					char *term = (char *)malloc(sizeof(char)*longitud+1);
+					for(uint i=0;i<longitud ;i++)
+					{
+						term[i] = s[i_st+i];
+					}
+					term[longitud]='\0';
+					#ifdef DEBUG
+						Serial.print("\r\nGPS::Debug -> Copiado termino, term= ");
+						Serial.print(term);
+					#endif
+					switch(termino)
+					{
+						case 1:
+							dat.UTCtime = atol(term);
+							break;
+						case 2:
+							dat.latitude = atof(term);
+							break;
+						case 4:
+							dat.longitud = atof(term);
+							break;
+						case 7:
+							dat.satelites = (uint)atol(term);
+							break;
+						case 8:
+							dat.dop = atof(term);
+							break;
+						case 9:
+							dat.altitude = atof(term);
+							break;
+					}
+					free(term);
+				}
+				i_st = i_et + 2;
+				et = false;
+			}
+		}
+	}
+}
+
+void GPS::_gprmc(char *s)
+{
+	uint termino = 0;
+	uint i_st = 0;
+	uint i_et = 0;
+	bool st = false;
+	bool et = false;
+	for(uint indice=0;indice<80;indice++)
+	{
+		if(s[indice] == ',')
+		{
+			if(st == false)
+			{
+				i_st = indice + 1 ;
+				st = true;
+				#ifdef DEBUG
+					Serial.print("\r\nGPS::Debug -> Comienzo de termino, i_st= ");
+					Serial.print(i_st,DEC);
+				#endif
+			}
+			else if(st==true && et==false)
+			{
+				i_et = indice - 1;
+				et = true;
+				#ifdef DEBUG
+					Serial.print("\r\nGPS::Debug -> Fin de termino, i_et= ");
+					Serial.print(i_et,DEC);
+				#endif
+			}
+			if(st&&et)
+			{
+				termino += 1;
+				if(termino>11)
+					break;
+				int longitud = i_et-i_st + 1 ;
+				#ifdef DEBUG
+					Serial.print("\r\nGPS::Debug -> Caracteres del termino, longitud= ");
+					Serial.print(longitud,DEC);
+				#endif
+				if(longitud == 1)
+				{
+					switch (termino)
+					{
+						case 2:
+							if(s[i_st]=='V')
+								dat.quality = 0;
+							break;
+						case 4:
+							dat.ns = s[i_st];
+							break;
+						case 6:
+							dat.eo = s[i_st];
+							break;
+						case 11:
+							if(s[i_st]=='W')
+								dat.magnetic *= -1;
+							break;
+					}
+				}
+				else if(longitud>1)
+				{
+					char *term = (char *)malloc(sizeof(char)*longitud+1);
+					for(uint i=0;i<longitud ;i++)
+					{
+						term[i] = s[i_st+i];
+					}
+					term[longitud]='\0';
+					#ifdef DEBUG
+						Serial.print("\r\nGPS::Debug -> Copiado termino, term= ");
+						Serial.print(term);
+					#endif
+					switch(termino)
+					{
+						case 1:
+							dat.FIXtime = atol(term);
+							break;
+						case 3:
+							dat.latitude = atof(term);
+							break;
+						case 5:
+							dat.longitud = atof(term);
+							break;
+						case 7:
+							dat.speed = atof(term);
+							break;
+						case 8:
+							dat.course = atof(term);
+							break;
+						case 9:
+							dat.date = atof(term);
+							break;
+						case 10:
+							dat.magnetic = atof(term);
+							break;
+					}
+					free(term);
+				}
+				i_st = i_et + 2;
+				et = false;
+			}
+		}
+	}
+}
+
+void GPS::sentence(char *s,uint size)
+{
+  char c;
+  while(true)
+  {
+    c = SoftwareSerial::read();
+    if(c=='$')
+    {
+      s[0] = c;
+      break;
+    }
+  }
+  uint i;
+  for(uint i=1;i < size; i++)
+  {
+    c = '\0';
+    c = SoftwareSerial::read();
+    if(c=='\r')
+    {
+      s[i]='\r';
+      s[i+1]='\n';
+      s[i+2]='\0';
+      break;
+    }
+    else
+    {
+      s[i] = c;
+    }
+  }
+}
+
+void GPS::gpgga(char *s,uint size)
+{
+  while(true)
+  {
+    GPS::sentence(s,size);
+    if(strncmp(s,"$GPGGA",6)==0)
+    {
+      break;
+    }
+  }
+}
+
+void GPS::gpgsa(char *s,uint size)
+{
+  while(true)
+  {
+    GPS::sentence(s,size);
+    if(strncmp(s,"$GPGSA",6)==0)
+    {
+      break;
+    }
+  }
+}
+
+void GPS::gprmc(char *s,uint size)
+{
+  while(true)
+  {
+    GPS::sentence(s,size);
+    if(strncmp(s,"$GPRMC",6)==0)
+    {
+      break;
+    }
+  }
+}
+
+bool GPS::autoparse()
+{
+	dat.exec = micros();
+	for(uint i=0;i<3;i++)
+	{
+		char t[80];
+		switch (i)
+		{
+			case 0:
+				GPS::gpgga(t,80);
+				GPS::parse(t);
+				break;
+			case 1:
+				GPS::gpgsa(t,80);
+				GPS::parse(t);
+				break;
+			case 2:
+				GPS::gprmc(t,80);
+				GPS::parse(t);
+				break;
+		}
+	}
+	dat.exec = micros() - dat.exec;
+	return(true);
+}

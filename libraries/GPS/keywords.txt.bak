@@ -1,0 +1,32 @@
+gps	KEYWORD1
+GPS	KEYWORD1
+
+begin	KEYWORD2
+read	KEYWORD2
+read	KEYWORD2
+sentencia	KEYWORD2
+gpgga	KEYWORD2
+gpgsa	KEYWORD2
+gprmc	KEYWORD2
+procesar	KEYWORD2
+print	KEYWORD2
+kmh	KEYWORD2
+autproc	KEYWORD2
+
+dat	KEYWORD3
+horaUTC	KEYWORD3
+horaFIX	KEYWORD3
+fecha	KEYWORD3
+latitud	KEYWORD3
+longitud	KEYWORD3
+ns	KEYWORD3
+eo	KEYWORD3
+modo_configurado	KEYWORD3
+modo_actual	KEYWORD3
+calidad	KEYWORD3
+satelites	KEYWORD3
+resolucion	KEYWORD3
+altura	KEYWORD3
+velocidad	KEYWORD3
+curso	KEYWORD3
+desviacionMAG	KEYWORD3

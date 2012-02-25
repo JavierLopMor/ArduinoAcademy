@@ -1,0 +1,74 @@
+#ifndef GPS_h
+	#define GPS_h
+	#include "WProgram.h"
+	#include "SoftwareSerial.h"
+	#include <string.h>
+	#define uint uint8_t
+	struct datos
+	{
+		long UTCtime;	//	Hora actual segun posición.	$GPGGA
+		long FIXtime;	//	Hora en la que se fijo la posicion.	$GPRMC
+		long date;	//	Fecha de fijado de la posicion.	$GPRMC
+		float latitude;	//	Latitud.	$GPGGA, $GPRMC
+		float longitud;	//	Longitud.	$GPGGA	$GPRMC
+		char ns;	//	Relativo Norte o Sur	$GPGGA, $GPRMC
+		char eo;	//	Relativo Este o Oeste.	$GPGGA, $GPRMC
+		char conf_mode;	//	Modo en que se configuro: A, Automatico, M, Manual	$GPGSA
+		uint actual_mode;	//	Modo del receptor: 1, No fijado, invalido. 2, Modo 2D. 3, Modo 3D. $GPGSA
+		uint quality;	//	Precisión del receptor. 0, No Valido. 1, Precisión GPS solo. 2, Precision DGPS	$GPGGA
+		uint satelites;	//	Numero de satelites usados para conectar, 	$GPGGA
+		float dop;	//	Resolución horizontal de la posición DOP	$GPGGA
+		float altitude;	//	Altura relativa del receptor.	$GPGGA
+		float speed;	//	Velocidad actual en Knots. $GPRMC
+		float course;	//	Curso actual en grados. $GPRMC
+		float magnetic; 	//	Desviacion magnetica con respecto al norte real, si es < 0 desviacion al oeste, Si > 0 es al Este $GPRMC
+		unsigned long exec;	//	Tiempo que tarda el autoprocesado.
+		datos()
+		{
+			UTCtime = 0;
+			quality = 0;
+			satelites = 0;
+			dop = 200.0;
+			altitude = 0.0;
+			conf_mode = 'A';
+			actual_mode = 1;
+			exec = 0;
+		}
+	};
+
+	class GPS: private SoftwareSerial
+	{
+		public:
+			//  Constructor de la clase.
+			GPS(uint r,uint t);
+			//  Configura la velocidad de SoftwareSerial.
+			void begin(long x);
+			//  Lee datos del puerto serie.
+			char read();
+			//  Devuelve una sentencia completa NMEA-0183
+			void sentencia(char *s,uint size);
+			//  Devuelve solo sentencias GPGGA
+			void gpgga(char *s,uint size);
+			//  Devuelve solo sentencias GPGSA
+			void gpgsa(char *s,uint size);
+			//  Devuelve solo sentencias GPRMC
+			void gprmc(char *s,uint size);
+			//	Procesa datos GPS.
+			void procesar(char *s);
+			//	Datos del GPS
+			struct datos dat;
+			//	Imprime los datos de forma amigable
+			void print();
+			//	Velocidad en Km/h
+			int kmh();
+			//	Procesamiento automatico ( ¡¡ Atención tardara 500 milisegundos en responder !! )
+			bool autoproc();
+			
+		private:
+			void _gpgga(char *s);
+			void _gpgsa(char *s);
+			void _gprmc(char *s);
+	};
+#endif
+
+

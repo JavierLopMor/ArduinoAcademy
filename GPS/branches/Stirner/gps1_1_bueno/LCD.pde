@@ -82,7 +82,14 @@ void altitud(char *altitud, char *unidades){
 void fecha(char *fecha){
   lcd.setCursor(0, 0);
   lcd.print("Fecha-> ");
+  lcd.print(fecha[0]);
   lcd.print(fecha[1]);
+  lcd.print("/");
+  lcd.print(fecha[2]);
+  lcd.print(fecha[3]);
+  lcd.print("/");
+  lcd.print(fecha[4]);
+  lcd.print(fecha[5]);
   
   
 }

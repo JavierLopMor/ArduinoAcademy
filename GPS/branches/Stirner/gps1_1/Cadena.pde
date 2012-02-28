@@ -1,4 +1,4 @@
-  char *pch;
+char *pch;
   char *GGA[15];
 
   void valores(){
@@ -11,14 +11,14 @@
     if (strcmp(pch,"$GPGGA")==0){
       while (pch != NULL) //cuando el dato sea diferente de ,, (valido, no null)
         {
-          pch = strtok (NULL, ",");  //donde estabamos sigue cortando en comas
+          pch = strtok (NULL, ","); //donde estabamos sigue cortando en comas
           GGA[i]=pch;
           if(pch!=NULL){
             i++;
           }
         }
         
-     representa(GGA,i,"$GPGGA");   
+     representa(GGA,i,"$GPGGA");
     }
     memset(GGA, 0, sizeof(GGA));
     i=0;

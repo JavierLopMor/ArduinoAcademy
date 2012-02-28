@@ -11,7 +11,7 @@ void representa(char **GGAPrint,int sentencias, char *trama){
   if(strcmp(trama,"$GPRMC")==0 && strcmp((GGAPrint[1]),"A")==0 ){
     debugerGPRMC(GGAPrint,sentencias,trama);//salida por Serial
       if(menu==3){
-        fecha(GGAPrint[0]);
+        fecha(GGAPrint[8]);
         reloj(GGAPrint[0]);
       }
   }

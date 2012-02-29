@@ -1,50 +1,24 @@
-char *pch;
-  char *GGA[15];
+  char *pch;                              // creamos un puntero de char
+  char *GGA[15];                          // y un array de punteros de char
 
   void valores(){
-    i=0;
-    memset(GGA, 0, sizeof(GGA));
+    i=0;                                  // inicializamos el contador 
+    memset(GGA, 0, sizeof(GGA));          // limpiamos la cadena GGA introduciendo en ellla todo ceros
     
-     pch = strtok (TramaGPG,",");
-     
-     //Trocea la cadena que devuelve
-    if (strcmp(pch,"$GPGGA")==0){
-      while (pch != NULL) //cuando el dato sea diferente de ,, (valido, no null)
+     pch = strtok (TramaGPG,",");         // tokenizamos la cadena que tenemos en TramaGPG y el primer intervalo 
+                                          // lo guardamos en pch
+                                          // NOTA: strtok trocea la cadena que devuelve
+    if (strcmp(pch,"$GPGGA")==0){         // cuando la cadena que tenemos dentro de pch sera igual a $GPGGA continuaremos 
+      while (pch != NULL)                 // mientras el dato sea diferente de ,, (no valido o NULL)
         {
-          pch = strtok (NULL, ","); //donde estabamos sigue cortando en comas
-          GGA[i]=pch;
-          if(pch!=NULL){
-            i++;
+          pch = strtok (NULL, ",");       // donde estabamos sigue cortando en comas y guardandolo en pch
+          GGA[i]=pch;                     // guardamos el valor de pch en el array GGA
+          if(pch!=NULL){                  // y si el valor que guardamos no es NULL incrementamos en uno el contador
+            i++;                          // incrementamos el contador/acumulador
           }
         }
         
-     representa(GGA,i,"$GPGGA");
-    }
-    memset(GGA, 0, sizeof(GGA));
-    i=0;
-    if(strcmp(pch,"$GPGSV")==0){
-      //Serial.println("Satelites detectados");
-      //representa(GGA,i,"$GPGSV");
-    }
-    i=0;
-    memset(GGA, 0, sizeof(GGA));
-    if(strcmp(pch,"$GPVTG")==0){
-      //Serial.println("Track made good and ground speed");
-      //representa(GGA,i,"$GPVTG");
-    }
-    i=0;
-    memset(GGA, 0, sizeof(GGA));
-    if(strcmp(pch,"$GPGSA")==0){
-      //Serial.println("GPS DOP and active satellites");
-      //representa(GGA,i,"$GPGSA");
-    }
-    i=0;
-    memset(GGA, 0, sizeof(GGA));
-    if(strcmp(pch,"$GPGLL")==0){
-      //Serial.println("Geographic position, latitude / longitude");
-      //representa(GGA,i,"$GPGLL");
-    }
-    i=0;
-    memset(GGA, 0, sizeof(GGA));
-    
+     representa(GGA,i,"$GPGGA");          // llamamos a la funcion que nos va a mostrar los datos, bien por serial o por LCD
+                                          // a esta funcion se le pasan tres paramtros 1º el array de chars, 2º el contador anterior, 3º la cadena a comparar
+    }    
   }

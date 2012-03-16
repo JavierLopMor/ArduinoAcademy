@@ -8,18 +8,19 @@ void guardarCoordenadas()
   //Si el archivo esta abierto escribimos en el las coordenadas actuales
   if (misCoordenadas)
     {
-        Serial.println("Guardando hora y posicion actual...");
+        Serial.println("Guardando hora y posicion actual...\n");
         misCoordenadas.println("Aqui ponemos las coordenadas y la hora");
         
 	// Cerramos el archivo:
         misCoordenadas.close();
-        Serial.println("Guardado correcto");
+        Serial.println("Guardado correcto\n");
+        Serial.println("######################################################\n");
     } 
   
   else 
     {
     // Si no se puede abrir el archivo, muestra un error
-    Serial.println("error al abrir tracking.txt");
+    Serial.println("error al abrir tracking.txt\n");
     }
   
   
@@ -30,7 +31,7 @@ void guardarCoordenadas()
   misCoordenadas = SD.open("tracking.txt");
   if (misMensajes) 
     {
-      Serial.println("tracking.txt:");
+      Serial.println("Abriendo tracking.txt:\n");
     
       // lee el archivo hasta que no haya nada mas en el
       while (misCoordenadas.available()) 
@@ -39,16 +40,15 @@ void guardarCoordenadas()
         }
     
       //cierra el archivo
-      misCoordenadas.close();  
+      misCoordenadas.close();
+      Serial.println();  
+      Serial.println("Cerrando tracking.txt:\n");
+    
     }
     
   else 
     {
       // Si el archivo no se abre, nos muestra un error
-      Serial.println("error abriendo tracking.txt");
+      Serial.println("error abriendo tracking.txt\n");
     }
-  
-  
-  
-  
 }
